@@ -21,6 +21,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.maps.model.LatLng
 import com.google.ar.core.Anchor
+import com.google.ar.core.Earth
+import com.google.ar.core.GeospatialPose
 import com.google.ar.core.TrackingState
 import com.google.ar.core.examples.java.common.helpers.DisplayRotationHelper
 import com.google.ar.core.examples.java.common.helpers.TrackingStateHelper
@@ -176,6 +178,16 @@ class HelloGeoRenderer(val activity: HelloGeoActivity) :
     //</editor-fold>
 
     // TODO: Obtain Geospatial information and display it on the map.
+    val earth = session?.earth ?: return
+    if (earth.trackingState == TrackingState.TRACKING) {
+      val cameraGeospatialPose: GeospatialPose = earth.cameraGeospatialPose
+      activity.view.mapView?.updateMapPosition(
+        latitude = cameraGeospatialPose.latitude,
+        longitude = cameraGeospatialPose.longitude,
+        heading = cameraGeospatialPose.heading,
+      )
+      activity.view.updateStatusText(earth, earth.cameraGeospatialPose)
+    }
 
     // Draw the placed anchor, if it exists.
     earthAnchor?.let {
