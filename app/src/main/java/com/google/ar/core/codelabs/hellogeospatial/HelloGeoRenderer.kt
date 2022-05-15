@@ -202,6 +202,26 @@ class HelloGeoRenderer(val activity: HelloGeoActivity) :
 
   fun onMapClick(latLng: LatLng) {
     // TODO: place an anchor at the given position.
+    val earth: Earth = session?.earth ?: return
+    if (earth.trackingState != TrackingState.TRACKING) {
+      return
+    }
+
+    earthAnchor?.detach()
+    earthAnchor = earth.createAnchor(
+      latLng.latitude,
+      latLng.longitude,
+      earth.cameraGeospatialPose.altitude - 1.3,
+      0f,
+      0f,
+      0f,
+      1f
+    )
+
+    activity.view.mapView?.earthMarker?.apply {
+      position = latLng
+      isVisible = true
+    }
   }
 
   private fun SampleRender.renderCompassAtAnchor(anchor: Anchor) {
